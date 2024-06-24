@@ -28,6 +28,7 @@ func LogPraser(inputFileName string, normalFileName string, errorFileName string
 
 	defer errorFileWriter.Close()
 	var wg sync.WaitGroup
+	var logWg sync.WaitGroup
 	errorChan := make(chan string, 10)
 	normalChan := make(chan string, 10)
 	wg.Add(2)
@@ -42,9 +43,9 @@ func LogPraser(inputFileName string, normalFileName string, errorFileName string
 	scanner := bufio.NewScanner(inputFile)
 	for scanner.Scan() {
 		log := scanner.Text()
-		wg.Add(1)
+		logWg.Add(1)
 		go func(log string) {
-			defer wg.Done()
+			defer logWg.Done()
 			if strings.Contains(log, "ERROR") {
 				errorChan <- log
 			} else {
@@ -55,14 +56,15 @@ func LogPraser(inputFileName string, normalFileName string, errorFileName string
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Error reading input file:", err)
 	}
-	wg.Wait()
+	logWg.Wait()
 	close(errorChan)
 	close(normalChan)
+	wg.Wait()
 }
 
 func WriteReport(writer io.Writer, ch <-chan string) {
 	for value := range ch {
-		_, err := writer.Write([]byte(value))
+		_, err := writer.Write([]byte(value + "\n"))
 		if err != nil {
 			log.Fatalln("Error writting into file: ", err)
 			return
