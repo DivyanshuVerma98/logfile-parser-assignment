@@ -10,6 +10,8 @@ import (
 	"sync"
 )
 
+// LogPraser processes the input log file and 
+// categorizes logs into normal and error files
 func LogPraser(inputFileName string, normalFileName string, errorFileName string) {
 	inputFile, err := os.Open(inputFileName)
 	if err != nil {
@@ -29,8 +31,12 @@ func LogPraser(inputFileName string, normalFileName string, errorFileName string
 	defer errorFileWriter.Close()
 	var wg sync.WaitGroup
 	var logWg sync.WaitGroup
+	
+	// Buffered channels for normal and error logs
 	errorChan := make(chan string, 10)
 	normalChan := make(chan string, 10)
+
+	// Start goroutines to write to files
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
@@ -40,6 +46,8 @@ func LogPraser(inputFileName string, normalFileName string, errorFileName string
 		defer wg.Done()
 		WriteReport(errorFileWriter, errorChan)
 	}()
+
+	// Scan the input file line by line
 	scanner := bufio.NewScanner(inputFile)
 	for scanner.Scan() {
 		log := scanner.Text()
@@ -56,12 +64,15 @@ func LogPraser(inputFileName string, normalFileName string, errorFileName string
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Error reading input file:", err)
 	}
+
+	// Wait for all log processing goroutines to finish
 	logWg.Wait()
 	close(errorChan)
 	close(normalChan)
 	wg.Wait()
 }
 
+// WriteReport writes logs from the channel to the provided writer
 func WriteReport(writer io.Writer, ch <-chan string) {
 	for value := range ch {
 		_, err := writer.Write([]byte(value + "\n"))
@@ -73,6 +84,7 @@ func WriteReport(writer io.Writer, ch <-chan string) {
 }
 
 func main() {
-	fmt.Println("Hello World")
+	fmt.Println("Stating the program ... 🚀")
 	LogPraser("inputFile.log", "normalFile.log", "errorFile.log")
+	fmt.Println("Done 🔥")
 }
