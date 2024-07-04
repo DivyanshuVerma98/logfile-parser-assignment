@@ -13,7 +13,7 @@ This project is a log parsing utility written in Go. It reads logs from an input
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-username/logfile-parser-assignment.git
+   git clone https://github.com/DivyanshuVerma98/logfile-parser-assignment.git
    ```
 2. Run the project:
     ```sh
