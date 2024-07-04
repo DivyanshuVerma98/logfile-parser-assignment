@@ -19,8 +19,7 @@ This project is a log parsing utility written in Go. It reads logs from an input
     ```sh
     go run main.go
     ```
-Make sure to have inputFile.log in the same directory as the executable or provide the correct path to the input file.
-
+    
 ## Code Explanation
 ### Main Functions
 1. **LogPraser**:

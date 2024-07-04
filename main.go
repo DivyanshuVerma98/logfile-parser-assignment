@@ -10,7 +10,7 @@ import (
 	"sync"
 )
 
-// LogPraser processes the input log file and 
+// LogPraser processes the input log file and
 // categorizes logs into normal and error files
 func LogPraser(inputFileName string, normalFileName string, errorFileName string) {
 	inputFile, err := os.Open(inputFileName)
@@ -31,7 +31,7 @@ func LogPraser(inputFileName string, normalFileName string, errorFileName string
 	defer errorFileWriter.Close()
 	var wg sync.WaitGroup
 	var logWg sync.WaitGroup
-	
+
 	// Buffered channels for normal and error logs
 	errorChan := make(chan string, 10)
 	normalChan := make(chan string, 10)
@@ -54,7 +54,8 @@ func LogPraser(inputFileName string, normalFileName string, errorFileName string
 		logWg.Add(1)
 		go func(log string) {
 			defer logWg.Done()
-			if strings.Contains(log, "ERROR") {
+			logList := strings.Split(log, " ")
+			if logList[2] == "ERROR" {
 				errorChan <- log
 			} else {
 				normalChan <- log
